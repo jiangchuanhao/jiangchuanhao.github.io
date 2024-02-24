@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File List</title>
+</head>
+<body>
+    <h1>File List</h1>
+    <ul id="file-list"></ul>
+
+    <script>
+        // 获取当前文件夹中的所有文件
+        fetch('.')
+            .then(response => response.text())
+            .then(text => {
+                // 解析 HTML 内容
+                const parser = new DOMParser();
+                const htmlDocument = parser.parseFromString(text, 'text/html');
+                const links = htmlDocument.querySelectorAll('a');
+
+                // 遍历链接，仅保留文件链接
+                const files = Array.from(links)
+                    .map(link => link.getAttribute('href'))
+                    .filter(href => href !== '../' && !href.startsWith('#'));
+
+                // 生成文件列表
+                const fileListElement = document.getElementById('file-list');
+                files.forEach(file => {
+                    const listItem = document.createElement('li');
+                    const link = document.createElement('a');
+                    link.href = file;
+                    link.textContent = file;
+                    listItem.appendChild(link);
+                    fileListElement.appendChild(listItem);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching file list:', error);
+            });
+    </script>
+</body>
+</html>
